@@ -3,36 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Consulta de Equipamentos</title>
+    <title>Consulta de Equipamentos - Suporte</title>
     <style>
-        /* Estilo para parecer com o sistema da Lenovo */
         body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f4f4f4; margin: 0; padding: 20px; }
         .container { max-width: 800px; margin: auto; }
         
-        .busca-container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 20px; text-align: center; }
-        input { padding: 12px; width: 60%; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; text-transform: uppercase; }
-        button { padding: 12px 25px; background-color: #0076ce; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 16px; }
+        .busca-container { 
+            background: white; 
+            padding: 20px; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+            margin-bottom: 20px; 
+            text-align: center; 
+        }
+        
+        input { 
+            padding: 12px; 
+            width: 60%; 
+            border: 1px solid #ccc; 
+            border-radius: 4px; 
+            font-size: 16px; 
+            text-transform: uppercase; 
+        }
+        
+        button { 
+            padding: 12px 25px; 
+            background-color: #0076ce; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+            font-size: 16px;
+        }
+        
         button:hover { background-color: #005a9e; }
 
-        /* Estilo do Card de Resultado (Igual à sua imagem) */
         .resultado-card { 
             display: flex; 
             align-items: center; 
             background: linear-gradient(to right, #ffffff, #eaddf1); 
-            padding: 20px; 
+            padding: 25px; 
             border-radius: 4px; 
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             animation: surgir 0.4s ease-out;
         }
-        .foto-produto { width: 150px; height: 150px; border: 1px solid #ddd; background: white; margin-right: 25px; display: flex; align-items: center; justify-content: center; }
-        .foto-produto img { max-width: 90%; max-height: 90%; }
         
-        .info-produto h2 { margin: 0; font-size: 24px; color: #000; }
-        .links-manutencao { margin-top: 15px; }
-        .btn-manual { color: #0076ce; text-decoration: none; font-weight: bold; border-bottom: 1px solid transparent; }
-        .btn-manual:hover { border-bottom: 1px solid #0076ce; }
+        .foto-produto { 
+            width: 150px; 
+            height: 150px; 
+            border: 1px solid #ddd; 
+            background: white; 
+            margin-right: 25px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+        }
+        
+        .foto-produto img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        
+        .info-produto h2 { margin: 0 0 10px 0; font-size: 22px; color: #000; }
+        
+        .links-manutencao { display: flex; flex-direction: column; gap: 10px; }
+        
+        .btn-link { color: #0076ce; text-decoration: none; font-weight: bold; font-size: 15px; }
+        .btn-link:hover { text-decoration: underline; }
 
         @keyframes surgir { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .erro-msg { text-align: center; color: #d9534f; font-weight: bold; margin-top: 20px; }
     </style>
 </head>
 <body>
@@ -40,147 +77,71 @@
 <div class="container">
     <div class="busca-container">
         <h1>Consulta de Suporte</h1>
-        <input type="text" id="campoBusca" placeholder="Digite o Type (Ex: 12E4)" onkeyup="if(event.key === 'Enter') buscar()">
-        <button onclick="buscar()">Consultar</button>
+        <input type="text" id="campoBusca" placeholder="Digite o Type (Ex: 12E4)">
+        <button id="btnBuscar">Consultar</button>
     </div>
 
-    <div id="areaResultado">
-        </div>
+    <div id="areaResultado"></div>
 </div>
 
 <script>
-    // PASSO 3: O CADASTRO DOS SEUS PRODUTOS
+    // Lista de Equipamentos
     const equipamentos = [
-        {
-            type: "12E4",
-            modelo: "M70q Gen 4 Desktop (ThinkCentre)",
-            foto: "imagens/12E4.jpg", // Certifique-se de que a imagem existe na pasta
-            manual: "https://drive.google.com/file/d/1tULsaJ5VpqoY9vyUWAWrCXLnLvUfmKOO/view?usp=drive_link"
-           
-        },
-        {
-            type: "83GK",
-            modelo: "Lenovo V14 G4 IRU ",
-            foto: "imagens/83GK.jpg",
-            manual: "https://drive.google.com/file/d/1ckD-1bGUXV2sYSwtf0HklU7moAElsgdi/view?usp=drive_link"
-        },
-        {
-            type: "12TE",
-            modelo: "M70q Gen 5 Desktop (ThinkCentre)",
-            foto: "imagens/12TE.jpg",
-            manual: "https://drive.google.com/file/d/1_SPiFovsVNYxTh-V83S5yRt9VleNfEYV/view?usp=drive_link"
-        },
-        {
-            type: "20RB",
-            modelo: "E14 (Type 20RA, 20RB) Laptop (ThinkPad)",
-            foto: "imagens/20RB.jpg",
-            manual: "https://drive.google.com/file/d/12sdCOsgSah1Tq8AWmyBloEnxqW6x7HQM/view?usp=drive_link"
-        },
-        {
-        type: "21E4",
-            modelo: "E14 (Type 20RA, 20RB) Laptop (ThinkPad)",
-            foto: "imagens/21E4.jpg",
-            manual: "https://drive.google.com/file/d/1tULsaJ5VpqoY9vyUWAWrCXLnLvUfmKOO/view?usp=drive_link"
-        },
-        {
-        type: "21M8",
-            modelo: "E14 Gen 6 (Type 21M7, 21M8) Laptops (ThinkPad)",
-            foto: "imagens/21M8.png",
-            manual: "https://drive.google.com/file/d/1cpEVeV_aFd9oPdzrLUa6kG5StLDq1Aq3/view?usp=drive_link"
-        },
-        {
-        type: "63D8",
-            modelo: "ThinkVision T24v-30 - Type 63D8",
-            foto: "imagens/63D8.jpg",
-            manual: "manuais/63D8.pdf"
-        },
-        {
-        type: "21M4",
-            modelo: "E14 Gen 6 (Type 21M3, 21M4) Laptops (ThinkPad)",
-            foto: "imagens/21M4.png",
-            manual: "https://drive.google.com/file/d/1x3Hy8zM-TwRF7UqkXCaNDngJ1actbq0l/view?usp=drive_link"
-        },
-        {
-        type: "12HT",
-            modelo: "M90s Gen 4 Desktop (ThinkCentre) - Type 12HT",
-            foto: "imagens/12HT.jpg",
-            manual: "https://drive.google.com/file/d/19Ym7f45aHaqvBSA3F__q4kqOyeS9dHzA/view?usp=drive_link"
-        },
-        {
-        type: "13E0",
-            modelo: "M75q Gen 2 (Type 11JN, 11JQ, 11JR, 11JS) Desktop (ThinkCentre) - Type 13E0",
-            foto: "imagens/13E0.jpg",
-            manual: "https://drive.google.com/file/d/1CL98nLsJ-hRWGB4-eeDTqdfa7EpumxYP/view?usp=drive_link"
-        },
-         {
-        type: "21D7",
-            modelo: "P16 Gen 1 (Type 21D6, 21D7) Laptop (ThinkPad)",
-            foto: "imagens/21D7.png",
-            manual: "https://drive.google.com/file/d/1FOfbX9gnDySfie1HQ99MEbSujXxY8pvW/view?usp=drive_link"
-        },
-         {
-        type: "20U6",
-            modelo: "L14 (type 20U5, 20U6) Laptops (ThinkPad)",
-            foto: "imagens/20U6.png",
-            manual:"https://drive.google.com/file/d/1FBEUDlisy8FC2laY7jhrCxolih1BL0CR/view?usp=drive_link"
-
-        },
-         {
-        type: "83ME",
-            modelo: "Lenovo V14 G4 IRU - Type 83GK",
-            foto: "imagens/83GK.jpg",
-            manual:"https://drive.google.com/file/d/1ckD-1bGUXV2sYSwtf0HklU7moAElsgdi/view?usp=drive_link"
-
-        },
-
-        
-
-
-
-
-
-
-
-
-
-        // Para cadastrar novos, basta copiar o bloco acima e mudar os dados
+        { type: "12E4", modelo: "M70q Gen 4 Desktop (ThinkCentre)", foto: "imagens/12E4.jpg", manual: "https://drive.google.com/file/d/1tULsaJ5VpqoY9vyUWAWrCXLnLvUfmKOO/view?usp=drive_link" },
+        { type: "83GK", modelo: "Lenovo V14 G4 IRU", foto: "imagens/83GK.jpg", manual: "https://drive.google.com/file/d/1ckD-1bGUXV2sYSwtf0HklU7moAElsgdi/view?usp=drive_link" },
+        { type: "12TE", modelo: "M70q Gen 5 Desktop (ThinkCentre)", foto: "imagens/12TE.jpg", manual: "https://drive.google.com/file/d/1_SPiFovsVNYxTh-V83S5yRt9VleNfEYV/view?usp=drive_link" },
+        { type: "20RB", modelo: "E14 (Type 20RA, 20RB) Laptop (ThinkPad)", foto: "imagens/20RB.jpg", manual: "https://drive.google.com/file/d/12sdCOsgSah1Tq8AWmyBloEnxqW6x7HQM/view?usp=drive_link" },
+        { type: "21E4", modelo: "E14 (Type 20RA, 20RB) Laptop (ThinkPad)", foto: "imagens/21E4.jpg", manual: "https://drive.google.com/file/d/1tULsaJ5VpqoY9vyUWAWrCXLnLvUfmKOO/view?usp=drive_link" },
+        { type: "21M8", modelo: "E14 Gen 6 (Type 21M7, 21M8) Laptops (ThinkPad)", foto: "imagens/21M8.png", manual: "https://drive.google.com/file/d/1cpEVeV_aFd9oPdzrLUa6kG5StLDq1Aq3/view?usp=drive_link" },
+        { type: "63D8", modelo: "ThinkVision T24v-30 - Type 63D8", foto: "imagens/63D8.jpg", manual: "manuais/63D8.pdf" },
+        { type: "21M4", modelo: "E14 Gen 6 (Type 21M3, 21M4) Laptops (ThinkPad)", foto: "imagens/21M4.png", manual: "https://drive.google.com/file/d/1x3Hy8zM-TwRF7UqkXCaNDngJ1actbq0l/view?usp=drive_link" },
+        { type: "12HT", modelo: "M90s Gen 4 Desktop (ThinkCentre) - Type 12HT", foto: "imagens/12HT.jpg", manual: "https://drive.google.com/file/d/19Ym7f45aHaqvBSA3F__q4kqOyeS9dHzA/view?usp=drive_link" },
+        { type: "13E0", modelo: "M75q Gen 2 (Type 11JN, 11JQ, 11JR, 11JS) Desktop (ThinkCentre) - Type 13E0", foto: "imagens/13E0.jpg", manual: "https://drive.google.com/file/d/1CL98nLsJ-hRWGB4-eeDTqdfa7EpumxYP/view?usp=drive_link" },
+        { type: "21D7", modelo: "P16 Gen 1 (Type 21D6, 21D7) Laptop (ThinkPad)", foto: "imagens/21D7.png", manual: "https://drive.google.com/file/d/1FOfbX9gnDySfie1HQ99MEbSujXxY8pvW/view?usp=drive_link" },
+        { type: "20U6", modelo: "L14 (type 20U5, 20U6) Laptops (ThinkPad)", foto: "imagens/20U6.png", manual: "https://drive.google.com/file/d/1FBEUDlisy8FC2laY7jhrCxolih1BL0CR/view?usp=drive_link" },
+        { type: "83ME", modelo: "Lenovo V14 G4 IRU - Type 83GK", foto: "imagens/83GK.jpg", manual: "https://drive.google.com/file/d/1ckD-1bGUXV2sYSwtf0HklU7moAElsgdi/view?usp=drive_link" }
     ];
 
-    function buscar() {
-        const termo = document.getElementById('campoBusca').value.toUpperCase().trim();
+    function realizarBusca() {
+        const campo = document.getElementById('campoBusca');
+        const termo = campo.value.toUpperCase().trim();
         const area = document.getElementById('areaResultado');
-        area.innerHTML = ""; // Limpa busca anterior
+        
+        area.innerHTML = ""; 
 
-        const busca = equipamentos.find(item => item.type === termo);
+        const resultado = equipamentos.find(item => item.type === termo);
 
-        if (busca) {
+        if (resultado) {
             area.innerHTML = `
                 <div class="resultado-card">
                     <div class="foto-produto">
-                        <img src="${busca.foto}" alt="Equipamento">
+                        <img src="${resultado.foto}" alt="Equipamento" onerror="this.src='https://via.placeholder.com/150?text=Sem+Foto'">
                     </div>
                     <div class="info-produto">
-                        <h2>${busca.modelo} - Type ${busca.type}</h2>
+                        <h2>${resultado.modelo}</h2>
+                        <p style="margin-top:-5px; color:#666;">Machine Type: <strong>${resultado.type}</strong></p>
                         <div class="links-manutencao">
-                            <a href="${busca.manual}" target="_blank" class="btn-manual">➔ Ver manual de manutenção</a>
-                        
+                            <a href="${resultado.manual}" target="_blank" class="btn-link">➔ Ver manual de manutenção</a>
+                            <a href="https://support.lenovo.com/br/pt/parts-lookup" target="_blank" class="btn-link">🔧 Consulta de peças</a>
                         </div>
                     </div>
                 </div>
             `;
         } else if (termo !== "") {
-            area.innerHTML = "<p style='text-align:center; color:red;'>Equipamento não encontrado.</p>";
+            area.innerHTML = "<p class='erro-msg'>Equipamento não encontrado.</p>";
         }
     }
+
+    // Evento de clique no botão
+    document.getElementById('btnBuscar').addEventListener('click', realizarBusca);
+
+    // Evento de apertar Enter no teclado
+    document.getElementById('campoBusca').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            realizarBusca();
+        }
+    });
 </script>
 
 </body>
-
 </html>
-
-
-
-
-
-
-
